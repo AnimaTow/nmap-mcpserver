@@ -1,0 +1,7 @@
+{
+  "_hinweis": "Beispielwerte (RFC 5737). Eigene Netze eintragen oder scope.json read-only in den Container mounten.",
+  "allow": [
+    "127.0.0.1/32",
+    "192.0.2.0/24"
+  ]
+}

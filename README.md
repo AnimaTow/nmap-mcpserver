@@ -128,3 +128,31 @@ For integration with the Glama MCP directory, the Docker container allows others
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Network-scoped streamable-http server
+
+In addition to the stdio server, `src/nmap_mcp/http_server.py` exposes nmap over the
+MCP **streamable-http** transport (for clients such as Open WebUI), with one hard
+boundary: every scan target must fall inside the networks listed in
+`src/nmap_mcp/scope.json`. The nmap **options stay fully free**.
+
+- `scope_guard.py` validates targets (single IP, CIDR, dash-range, hostname, and
+  space/comma lists); anything outside the scope — or anything unparseable — is
+  rejected. Run `python src/nmap_mcp/scope_guard.py` for its self-test.
+- `scope.json` ships with RFC 5737 example ranges. Replace them with your own
+  networks, or bind-mount your own `scope.json` read-only into the container.
+
+Run it:
+
+```bash
+# flat (no package import, no python-libnmap needed)
+python src/nmap_mcp/http_server.py http 8791
+```
+
+Docker (binds to localhost only, NET_RAW for SYN/OS scans):
+
+```bash
+docker build -t nmap-full -f docker/Dockerfile .
+NMAP_SCOPE=/path/to/scope.json ./docker/run.sh
+```
+
+Tools: `run-nmap-scan`, `get-scan-details`, `list-all-scans`, `nmap-scope`.
